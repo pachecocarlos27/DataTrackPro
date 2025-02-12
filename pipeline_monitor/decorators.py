@@ -32,16 +32,16 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
             start_pipeline_timing()
 
             try:
-                # Execute function
+                # Execute function and get result
                 result = func(*args, **kwargs)
 
-                # Record success metrics
+                # Calculate metrics after successful execution
                 end_time = time.time()
                 end_memory = psutil.Process().memory_info().rss
                 execution_time = end_time - start_time
                 memory_used = end_memory - start_memory
 
-                # Log metrics
+                # Record metrics
                 metrics = {
                     'function_name': func.__name__,
                     'execution_time': execution_time,
@@ -76,9 +76,11 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
                     logger.warning(alert_msg)
                     emit_metric('alert', {'message': alert_msg})
 
+                # Return the actual result
                 return result
 
             except Exception as e:
+                # Log error and update metrics
                 logger.error(f"Error in {func.__name__}: {str(e)}")
                 stop_pipeline_timing(func.__name__)
                 record_pipeline_run(func.__name__, False)
@@ -87,5 +89,5 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
                 })
                 raise
 
-        return wrapper
+        return wrapper  # type: ignore
     return decorator
