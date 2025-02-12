@@ -51,14 +51,20 @@ def emit_metric(metric_type: str, data: dict) -> None:
     except Exception as e:
         logger.error(f"Failed to emit metric: {str(e)}")
 
-def start_dashboard(host: str = '0.0.0.0', port: int = 5000, debug: bool = False) -> None:
+def start_dashboard(
+    host: str = '0.0.0.0',
+    port: int = 5000,
+    debug: bool = False,
+    use_reloader: bool = False
+) -> None:
     """
-    Start the dashboard server.
+    Start the monitoring dashboard server.
 
     Args:
-        host: Host to bind to
-        port: Port to listen on
+        host: Host to bind to (default: '0.0.0.0')
+        port: Port to listen on (default: 5000)
         debug: Enable debug mode
+        use_reloader: Enable auto-reloader (default: False)
     """
     try:
         logger.info(f"Starting dashboard on {host}:{port}")
@@ -67,7 +73,7 @@ def start_dashboard(host: str = '0.0.0.0', port: int = 5000, debug: bool = False
             host=host,
             port=port,
             debug=debug,
-            use_reloader=False,
+            use_reloader=use_reloader,
             log_output=True
         )
     except Exception as e:
