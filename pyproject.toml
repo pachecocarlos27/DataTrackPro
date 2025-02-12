@@ -28,6 +28,11 @@ dependencies = [
     "simple-websocket>=1.1.0",
 ]
 
+[project.scripts]
+pipeline-dashboard = "pipeline_monitor.cli:run_dashboard"
+pipeline-demo = "pipeline_monitor.cli:run_demo"
+pipeline-prometheus = "pipeline_monitor.cli:run_prometheus"
+
 [project.urls]
 Homepage = "https://github.com/replit/pipeline-monitor"
 Documentation = "https://github.com/replit/pipeline-monitor/docs"

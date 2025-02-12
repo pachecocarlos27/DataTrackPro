@@ -1,19 +1,3 @@
-# Pipeline Monitor
-
-A Python library for advanced data pipeline monitoring with comprehensive observability and visualization capabilities.
-
-## Features
-
-- Automatic performance tracking using decorators and context managers
-- Real-time interactive web dashboard with live metrics and WebSocket updates
-- JSON-structured logging with detailed execution insights
-- Integrated monitoring for ETL and machine learning pipelines
-- Built-in alerting and performance tracking
-- Extensible design supporting multiple observability integrations
-
-## Installation
-
-```bash
 pip install pipeline-monitor
 ```
 
@@ -33,10 +17,20 @@ with MonitoringBlock("data_processing"):
     process_data()
 ```
 
-## Documentation
+## Running the Tools
 
-For detailed documentation and examples, visit our [documentation](https://github.com/replit/pipeline-monitor/docs).
+After installation, you can use the following commands:
 
-## License
+1. Start the monitoring dashboard:
+```bash
+pipeline-dashboard
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+2. Run the demo pipeline:
+```bash
+pipeline-demo
+```
+
+3. Run with Prometheus metrics:
+```bash
+pipeline-prometheus

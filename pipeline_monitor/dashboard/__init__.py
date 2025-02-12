@@ -1,6 +1,6 @@
 """
 Web dashboard module for real-time monitoring of pipeline metrics.
 """
-from .app import create_dashboard_app, start_dashboard
+from .app import app, socketio, emit_metric
 
-__all__ = ['create_dashboard_app', 'start_dashboard']
+__all__ = ['app', 'socketio', 'emit_metric']
