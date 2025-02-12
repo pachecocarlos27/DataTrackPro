@@ -5,6 +5,7 @@ import traceback
 from typing import Callable, Any, Optional, TypeVar, cast
 import psutil
 import json
+from .dashboard.app import emit_metric
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +59,24 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[Call
 
                 logger.info(json.dumps(metrics))
 
+                # Emit metrics to dashboard
+                emit_metric('performance', {
+                    'active_pipelines': 1,  # This will be enhanced later
+                    'execution_time': execution_time
+                })
+
+                emit_metric('memory', {
+                    'rss_mb': end_memory,
+                    'memory_used_mb': memory_used
+                })
+
                 if alert_threshold and execution_time > alert_threshold:
-                    logger.warning(
+                    alert_msg = (
                         f"Function {func.__name__} exceeded time threshold: "
                         f"{execution_time:.2f}s > {alert_threshold}s"
                     )
+                    logger.warning(alert_msg)
+                    emit_metric('alert', {'message': alert_msg})
 
             return cast(T, result)
         return wrapper

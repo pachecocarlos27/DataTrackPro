@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pipeline Monitor Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .metric-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .metric-value {
+            font-size: 2em;
+            color: #2196F3;
+        }
+        .alert {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Pipeline Monitor Dashboard</h1>
+        
+        <div class="metric-panel">
+            <div class="metric-title">Active Pipelines</div>
+            <div id="active-pipelines" class="metric-value">0</div>
+        </div>
+        
+        <div class="metric-panel">
+            <div class="metric-title">Memory Usage</div>
+            <div id="memory-usage" class="metric-value">0 MB</div>
+        </div>
+        
+        <div class="metric-panel">
+            <div class="metric-title">Recent Alerts</div>
+            <div id="alerts-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+        
+        socket.on('metric_update', (data) => {
+            console.log('Received metric update:', data);
+            
+            switch(data.type) {
+                case 'performance':
+                    updatePerformanceMetrics(data.data);
+                    break;
+                case 'memory':
+                    updateMemoryMetrics(data.data);
+                    break;
+                case 'alert':
+                    addAlert(data.data);
+                    break;
+            }
+        });
+        
+        function updatePerformanceMetrics(data) {
+            document.getElementById('active-pipelines').textContent = 
+                data.active_pipelines || '0';
+        }
+        
+        function updateMemoryMetrics(data) {
+            document.getElementById('memory-usage').textContent = 
+                `${data.rss_mb.toFixed(2)} MB`;
+        }
+        
+        function addAlert(data) {
+            const alertsContainer = document.getElementById('alerts-container');
+            const alertElement = document.createElement('div');
+            alertElement.className = 'alert';
+            alertElement.textContent = data.message;
+            alertsContainer.insertBefore(alertElement, alertsContainer.firstChild);
+            
+            // Keep only last 5 alerts
+            while (alertsContainer.children.length > 5) {
+                alertsContainer.removeChild(alertsContainer.lastChild);
+            }
+        }
+    </script>
+</body>
+</html>
