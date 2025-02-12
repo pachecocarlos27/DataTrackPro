@@ -6,6 +6,11 @@ from typing import Callable, Any, Optional, TypeVar, cast
 import psutil
 import json
 from .dashboard.app import emit_metric
+from .prometheus_metrics import (
+    start_pipeline_timing, stop_pipeline_timing,
+    record_pipeline_run, update_memory_usage,
+    update_active_pipelines
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +27,14 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[Call
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             start_time = time.time()
-            start_memory = psutil.Process().memory_info().rss / 1024 / 1024  # MB
+            start_memory = psutil.Process().memory_info().rss
 
             success = True
             error_info = {}
             result = None
+
+            # Start Prometheus timing
+            start_pipeline_timing()
 
             try:
                 result = func(*args, **kwargs)
@@ -41,7 +49,7 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[Call
                 raise
             finally:
                 end_time = time.time()
-                end_memory = psutil.Process().memory_info().rss / 1024 / 1024  # MB
+                end_memory = psutil.Process().memory_info().rss
 
                 execution_time = end_time - start_time
                 memory_used = end_memory - start_memory
@@ -49,7 +57,7 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[Call
                 metrics = {
                     'function_name': func.__name__,
                     'execution_time': execution_time,
-                    'memory_usage_mb': memory_used,
+                    'memory_usage_mb': memory_used / 1024 / 1024,
                     'success': success,
                     'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
                 }
@@ -59,15 +67,21 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[Call
 
                 logger.info(json.dumps(metrics))
 
+                # Record Prometheus metrics
+                stop_pipeline_timing(func.__name__)
+                record_pipeline_run(func.__name__, success)
+                update_memory_usage(func.__name__, end_memory)
+                update_active_pipelines(1)  # This will be enhanced later
+
                 # Emit metrics to dashboard
                 emit_metric('performance', {
-                    'active_pipelines': 1,  # This will be enhanced later
+                    'active_pipelines': 1,
                     'execution_time': execution_time
                 })
 
                 emit_metric('memory', {
-                    'rss_mb': end_memory,
-                    'memory_used_mb': memory_used
+                    'rss_mb': end_memory / 1024 / 1024,
+                    'memory_used_mb': memory_used / 1024 / 1024
                 })
 
                 if alert_threshold and execution_time > alert_threshold:
