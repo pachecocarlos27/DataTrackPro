@@ -34,3 +34,22 @@ pipeline-demo
 3. Run with Prometheus metrics:
 ```bash
 pipeline-prometheus
+```
+
+## Tutorials and Examples
+
+Check out our interactive tutorials in the `examples/notebooks` directory:
+
+1. `01_basic_usage.ipynb` - Getting started with performance tracking
+2. `02_dashboard_monitoring.ipynb` - Real-time dashboard monitoring
+
+To run the tutorials:
+
+1. Install Jupyter:
+```bash
+pip install jupyter
+```
+
+2. Start Jupyter:
+```bash
+jupyter notebook examples/notebooks/
