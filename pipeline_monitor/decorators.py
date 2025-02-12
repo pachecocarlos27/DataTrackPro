@@ -24,24 +24,23 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
         alert_threshold: Maximum execution time in seconds before triggering alert
     """
     def decorator(func: F) -> F:
-        @functools.wraps(func)
+        @functools.wraps(func)  # This preserves the original function metadata
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            # Initialize metrics
             start_time = time.time()
             start_memory = psutil.Process().memory_info().rss
             start_pipeline_timing()
 
             try:
                 # Execute function and get result
-                result = func(*args, **kwargs)
+                result = func(*args, **kwargs)  # Actually call the function here
 
-                # Calculate metrics after successful execution
+                # Calculate metrics
                 end_time = time.time()
                 end_memory = psutil.Process().memory_info().rss
                 execution_time = end_time - start_time
                 memory_used = end_memory - start_memory
 
-                # Record metrics
+                # Log metrics
                 metrics = {
                     'function_name': func.__name__,
                     'execution_time': execution_time,
@@ -76,11 +75,10 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
                     logger.warning(alert_msg)
                     emit_metric('alert', {'message': alert_msg})
 
-                # Return the actual result
-                return result
+                return result  # Return the actual function result
 
             except Exception as e:
-                # Log error and update metrics
+                # Log error and update metrics for failure case
                 logger.error(f"Error in {func.__name__}: {str(e)}")
                 stop_pipeline_timing(func.__name__)
                 record_pipeline_run(func.__name__, False)
@@ -89,5 +87,5 @@ def track_performance(alert_threshold: Optional[float] = None) -> Callable[[F], 
                 })
                 raise
 
-        return wrapper  # type: ignore
+        return wrapper
     return decorator
