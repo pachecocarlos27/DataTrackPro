@@ -1,88 +1,52 @@
-# Pipeline Monitor
+# Datant Pipeline Monitor
 
-A comprehensive monitoring solution for Python data pipelines.
-
-## Features
-
-- Performance tracking with decorators and context managers
-- Memory usage monitoring
-- Automatic alerting (Slack, Email, Logs)
-- Real-time dashboard
-- Prometheus metrics integration
-- JSON logging
+A professional data pipeline monitoring solution by [Datant LLC](https://data-nt.tech).
 
 ## Installation
 
 ```bash
-pip install pipeline-monitor
+pip install datant-pipeline-monitor
 ```
+
+## Features
+
+- Real-time pipeline monitoring
+- Prometheus integration for metrics collection
+- Interactive dashboard visualization
+- Memory and resource usage tracking
+- Configurable alert system
+- Professional-grade monitoring capabilities
+
+## Documentation
+
+For detailed documentation and examples, please visit our [documentation page](https://github.com/pachecocarlos27/DataTrackPro/docs).
 
 ## Quick Start
 
 ```python
-from pipeline_monitor import track_performance, ResourceMonitor
+from pipeline_monitor import PipelineMonitor
+monitor = PipelineMonitor()
 
-# Monitor function performance
-@track_performance(alert_threshold=30, memory_threshold=500)
-def process_data():
-    pass
+# Add a resource monitor
+with monitor.resource_monitor("my_resource"):
+    # Your code here
 
-# Monitor code blocks
-with ResourceMonitor("data_processing", alert_threshold_mb=1000):
-    pass
+monitor.stop()
 ```
 
-## Configuration
+## Examples
 
-Create a `config.json` file:
+Check out our [examples directory](https://github.com/pachecocarlos27/DataTrackPro/tree/main/examples) for more detailed usage examples.
 
-```json
-{
-    "alerts": {
-        "time_threshold": 300,
-        "memory_threshold": 1000,
-        "slack_webhook": "https://hooks.slack.com/...",
-        "email": {
-            "smtp_host": "smtp.gmail.com",
-            "smtp_port": 587,
-            "sender": "alerts@company.com",
-            "password": "secret",
-            "recipients": ["team@company.com"]
-        }
-    }
-}
-```
+## License
 
-## Tools
+Copyright © 2024 Datant LLC. All rights reserved.
+This software is proprietary and requires explicit permission from Datant LLC for commercial use.
 
-```bash
-# Start monitoring dashboard
-pipeline-dashboard
+## Support
 
-# Run demo pipeline
-pipeline-demo
+For support inquiries, please contact us at admin@data-nt.com or visit our [website](https://data-nt.tech).
 
-# Start Prometheus metrics
-pipeline-prometheus
+## About Datant LLC
 
-# Test alerts configuration
-pipeline-test-alerts config.json
-```
-
-## Tutorials and Examples
-
-Check out our interactive tutorials in the `examples/notebooks` directory:
-
-1. `01_basic_usage.ipynb` - Getting started with performance tracking
-2. `02_dashboard_monitoring.ipynb` - Real-time dashboard monitoring
-
-To run the tutorials:
-
-1. Install Jupyter:
-```bash
-pip install jupyter
-```
-
-2. Start Jupyter:
-```bash
-jupyter notebook examples/notebooks/
+Datant LLC specializes in professional data solutions and monitoring tools. Visit [data-nt.tech](https://data-nt.tech) to learn more about our services and solutions.
