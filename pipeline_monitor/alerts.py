@@ -141,3 +141,36 @@ def slack_alert_handler(webhook_url: str) -> Callable:
             logger.error(f"Failed to send Slack alert: {str(e)}")
 
     return handler
+
+def sms_alert_handler(
+    provider_url: str,
+    api_key: str,
+    sender_number: str,
+    recipient_numbers: Union[str, list]
+) -> Callable:
+    """
+    Create an SMS alert handler.
+    
+    Args:
+        provider_url: SMS provider API URL
+        api_key: API key for authentication
+        sender_number: Sender phone number
+        recipient_numbers: Single recipient or list of recipient phone numbers
+    """
+    if isinstance(recipient_numbers, str):
+        recipient_numbers = [recipient_numbers]
+
+    def handler(message: str, context: Dict[str, Any]) -> None:
+        payload = {
+            "api_key": api_key,
+            "sender": sender_number,
+            "recipients": recipient_numbers,
+            "message": message
+        }
+        try:
+            response = requests.post(provider_url, json=payload)
+            response.raise_for_status()
+        except Exception as e:
+            logger.error(f"Failed to send SMS alert: {str(e)}")
+
+    return handler

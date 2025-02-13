@@ -1,8 +1,9 @@
 {
     "logging": {
-        "level": "INFO",
+        "level": "DEBUG",
         "json_format": true,
-        "log_file": "pipeline.log"
+        "log_file": "pipeline.log",
+        "new_log_level": "INFO"
     },
     "alerts": {
         "enabled": true,
@@ -15,6 +16,12 @@
             "sender": null,
             "password": null,
             "recipients": []
+        },
+        "sms": {
+            "provider_url": null,
+            "api_key": null,
+            "sender_number": null,
+            "recipient_numbers": []
         }
     },
     "prometheus": {
@@ -28,4 +35,4 @@
         "debug": false,
         "update_interval": 1.0
     }
-} 
+}

@@ -7,7 +7,7 @@ import numpy as np
 from typing import List, Tuple
 
 # Load configuration
-config = Configuration.from_file("config.json")
+config = Configuration.from_file("examples/config.json")
 setup_logging(**config.get('logging', {}))
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class MemoryMonitor:
         delta = current - self.initial_memory
         logger.info(f"{label}: {current:.1f}MB (Δ{delta:+.1f}MB)")
 
-    @track_performance(memory_threshold=100)
+    @track_performance(memory_threshold=100, config_path="examples/config.json")
     def memory_intensive_task(self, size: int) -> Tuple[int, float]:
         """Perform a memory-intensive operation."""
         start_mem = self.get_memory_usage()
@@ -40,7 +40,7 @@ class MemoryMonitor:
         peak_mem = self.get_memory_usage()
         return result, peak_mem - start_mem
 
-    @track_performance(memory_threshold=50)
+    @track_performance(memory_threshold=50, config_path="examples/config.json")
     def process_in_batches(self, total_size: int, batch_size: int) -> List[float]:
         """Process data in batches to manage memory."""
         results = []
@@ -104,4 +104,4 @@ def main():
         logger.error(f"Error in memory demos: {e}")
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -9,6 +9,15 @@ class JSONFormatter(logging.Formatter):
     """
     
     def format(self, record):
+        """
+        Format the log record as a JSON string.
+        
+        Args:
+            record: Log record to format
+        
+        Returns:
+            JSON string representation of the log record
+        """
         log_data = {
             'timestamp': self.formatTime(record),
             'level': record.levelname,

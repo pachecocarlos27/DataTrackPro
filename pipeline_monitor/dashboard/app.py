@@ -51,6 +51,23 @@ def emit_metric(metric_type: str, data: dict) -> None:
     except Exception as e:
         logger.error(f"Failed to emit metric: {str(e)}")
 
+    # Send SMS alert if metric type is 'alert'
+    if metric_type == 'alert':
+        from ..alerts import sms_alert_handler
+        from ..config import Configuration
+
+        config = Configuration.from_file("examples/config.json")
+        sms_cfg = config.get('alerts', {}).get('sms', {})
+        if sms_cfg:
+            handler = sms_alert_handler(
+                provider_url=sms_cfg['provider_url'],
+                api_key=sms_cfg['api_key'],
+                sender_number=sms_cfg['sender_number'],
+                recipient_numbers=sms_cfg['recipient_numbers']
+            )
+            alert_msg = data.get('message', 'No message provided')
+            handler(alert_msg, data)
+
 def start_dashboard(
     host: str = '0.0.0.0',
     port: int = 5000,
