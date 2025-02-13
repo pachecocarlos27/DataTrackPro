@@ -5,7 +5,7 @@ from typing import Optional, Any
 import json
 from contextlib import ContextDecorator
 from .dashboard.app import emit_metric
-from .alerts import setup_alerts, log_alert_handler
+from .alerts import setup_alerts, log_alert_handler, sms_alert_handler
 from .config import Configuration
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,14 @@ class ResourceMonitor(ContextDecorator):
                 sender=email_cfg['sender'],
                 password=email_cfg['password'],
                 recipients=email_cfg['recipients']
+            )
+        elif alert_config.get('sms'):
+            sms_cfg = alert_config['sms']
+            handler = sms_alert_handler(
+                provider_url=sms_cfg['provider_url'],
+                api_key=sms_cfg['api_key'],
+                sender_number=sms_cfg['sender_number'],
+                recipient_numbers=sms_cfg['recipient_numbers']
             )
         else:
             handler = log_alert_handler

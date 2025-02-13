@@ -5,7 +5,7 @@ import random
 import logging
 
 # Load configuration
-config = Configuration.from_file("config.json")
+config = Configuration.from_file("examples/config.json")
 setup_logging(**config.get('logging', {}))
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def start_prometheus():
     start_http_server(port)
     logger.info(f"Prometheus metrics available at http://localhost:{port}")
 
-@track_performance(memory_threshold=50)
+@track_performance(memory_threshold=50, config_path="examples/config.json")
 def process_batch(size: int):
     """Process a batch of data with variable timing."""
     start = time.time()
@@ -42,7 +42,7 @@ def run_pipeline():
     batch_sizes = [100, 200, 300, 400, 500]
     
     for size in batch_sizes:
-        with ResourceMonitor(f"batch_processing_{size}"):
+        with ResourceMonitor(f"batch_processing_{size}", config_path="examples/config.json"):
             try:
                 result = process_batch(size)
                 logger.info(f"Processed batch of {size}: got {len(result)} results")

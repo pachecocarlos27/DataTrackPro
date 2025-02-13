@@ -11,7 +11,7 @@ from .prometheus_metrics import (
     record_pipeline_run, update_memory_usage,
     update_active_pipelines
 )
-from .alerts import setup_alerts, log_alert_handler, slack_alert_handler, email_alert_handler
+from .alerts import setup_alerts, log_alert_handler, slack_alert_handler, email_alert_handler, sms_alert_handler
 from .config import Configuration
 from .logging_utils import JSONFormatter
 
@@ -53,6 +53,14 @@ def get_alert_handler(alert_config: Dict[str, Any]) -> Callable:
             sender=email_cfg['sender'],
             password=email_cfg['password'],
             recipients=email_cfg['recipients']
+        )
+    
+    if sms_cfg := alert_config.get('sms'):
+        return sms_alert_handler(
+            provider_url=sms_cfg['provider_url'],
+            api_key=sms_cfg['api_key'],
+            sender_number=sms_cfg['sender_number'],
+            recipient_numbers=sms_cfg['recipient_numbers']
         )
     
     return log_alert_handler

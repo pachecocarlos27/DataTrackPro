@@ -46,3 +46,26 @@ def log_memory_usage(threshold_mb: Optional[float] = None, pipeline_name: Option
             f"Memory usage ({metrics['rss_mb']:.2f}MB) "
             f"exceeded threshold ({threshold_mb}MB)"
         )
+
+    # Send SMS alert if memory usage exceeds threshold
+    if threshold_mb is not None and metrics['rss_mb'] > threshold_mb:
+        from .alerts import sms_alert_handler
+        from .config import Configuration
+
+        config = Configuration.from_file("examples/config.json")
+        sms_cfg = config.get('alerts', {}).get('sms', {})
+        if sms_cfg:
+            handler = sms_alert_handler(
+                provider_url=sms_cfg['provider_url'],
+                api_key=sms_cfg['api_key'],
+                sender_number=sms_cfg['sender_number'],
+                recipient_numbers=sms_cfg['recipient_numbers']
+            )
+            alert_msg = (
+                f"Memory usage ({metrics['rss_mb']:.2f}MB) "
+                f"exceeded threshold ({threshold_mb}MB)"
+            )
+            handler(alert_msg, {
+                'memory_usage_mb': metrics['rss_mb'],
+                'threshold_mb': threshold_mb
+            })

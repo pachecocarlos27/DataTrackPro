@@ -62,6 +62,27 @@ def update_memory_usage(pipeline_name: str, memory_bytes: float) -> None:
     """Update memory usage metrics."""
     MEMORY_USAGE.labels(pipeline_name=pipeline_name).set(memory_bytes)
 
+    # Send SMS alert if memory usage exceeds threshold
+    from .alerts import sms_alert_handler
+    from .config import Configuration
+
+    config = Configuration.from_file("examples/config.json")
+    sms_cfg = config.get('alerts', {}).get('sms', {})
+    if sms_cfg:
+        handler = sms_alert_handler(
+            provider_url=sms_cfg['provider_url'],
+            api_key=sms_cfg['api_key'],
+            sender_number=sms_cfg['sender_number'],
+            recipient_numbers=sms_cfg['recipient_numbers']
+        )
+        alert_msg = (
+            f"Memory usage ({memory_bytes / 1024 / 1024:.2f}MB) "
+            f"exceeded threshold"
+        )
+        handler(alert_msg, {
+            'memory_usage_bytes': memory_bytes
+        })
+
 def update_active_pipelines(count: int) -> None:
     """Update the number of active pipelines."""
     ACTIVE_PIPELINES.set(count)

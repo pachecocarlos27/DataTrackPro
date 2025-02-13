@@ -9,7 +9,7 @@ import logging
 import math
 
 # Load configuration
-config = Configuration.from_file("config.json")
+config = Configuration.from_file("examples/config.json")
 setup_logging(**config.get('logging', {}))
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class MLPipeline:
                    f"{self.dashboard_config.get('port', 5000)}")
         time.sleep(1)  # Wait for dashboard
 
-    @track_performance(alert_threshold=2.0)
+    @track_performance(alert_threshold=2.0, config_path="examples/config.json")
     def train_model(self, epochs: int):
         """Simulate ML model training."""
         losses = []
@@ -43,7 +43,7 @@ class MLPipeline:
             logger.info(f"Epoch {epoch + 1}/{epochs}, Loss: {loss:.4f}")
         return min(losses)
 
-    @track_performance(memory_threshold=200)
+    @track_performance(memory_threshold=200, config_path="examples/config.json")
     def preprocess_data(self, size: int):
         """Simulate data preprocessing."""
         data = [random.random() for _ in range(size)]

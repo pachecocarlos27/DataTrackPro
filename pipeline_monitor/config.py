@@ -30,6 +30,12 @@ class Configuration:
                 'sender': None,
                 'password': None,
                 'recipients': []
+            },
+            'sms': {  # Optional SMS configuration
+                'provider_url': None,
+                'api_key': None,
+                'sender_number': None,
+                'recipient_numbers': []
             }
         })
 
