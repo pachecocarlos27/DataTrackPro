@@ -28,6 +28,7 @@ dependencies = [
     "pip>=25.0.1",
     "prometheus-client>=0.21.1",
     "psutil>=6.1.1",
+    "requests>=2.31.0",
     "simple-websocket>=1.1.0",
 ]
 
@@ -35,6 +36,7 @@ dependencies = [
 pipeline-dashboard = "pipeline_monitor.cli:run_dashboard"
 pipeline-demo = "pipeline_monitor.cli:run_demo"
 pipeline-prometheus = "pipeline_monitor.cli:run_prometheus"
+pipeline-test-alerts = "pipeline_monitor.cli:test_alerts"
 
 [project.urls]
 Homepage = "https://github.com/replit/pipeline-monitor"

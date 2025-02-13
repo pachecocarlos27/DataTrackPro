@@ -9,7 +9,7 @@ def get_memory_usage() -> Dict[str, float]:
     Get current memory usage statistics.
 
     Returns:
-        Dict containing memory usage metrics in MB
+        Dict containing memory usage metrics in MB and bytes
     """
     process = psutil.Process()
     memory_info = process.memory_info()
@@ -17,20 +17,29 @@ def get_memory_usage() -> Dict[str, float]:
     metrics = {
         'rss_mb': memory_info.rss / 1024 / 1024,  # Resident Set Size
         'vms_mb': memory_info.vms / 1024 / 1024,  # Virtual Memory Size
-        'percent': process.memory_percent()
+        'percent': process.memory_percent(),
+        'rss_bytes': memory_info.rss,  # Add raw bytes for Prometheus
+        'vms_bytes': memory_info.vms   # Add raw bytes for Prometheus
     }
 
     return metrics
 
-def log_memory_usage(threshold_mb: Optional[float] = None) -> None:
+def log_memory_usage(threshold_mb: Optional[float] = None, pipeline_name: Optional[str] = None) -> None:
     """
     Log current memory usage and optionally check against threshold.
+    Updates Prometheus metrics if pipeline name is provided.
 
     Args:
         threshold_mb: Optional threshold in MB to trigger warning
+        pipeline_name: Optional name of the pipeline for metrics tracking
     """
     metrics = get_memory_usage()
     logger.info(f"Memory usage metrics: {metrics}")
+
+    # Update Prometheus metrics if pipeline name is provided
+    if pipeline_name is not None:
+        from .prometheus_metrics import update_memory_usage
+        update_memory_usage(pipeline_name, metrics['rss_bytes'])
 
     if threshold_mb is not None and metrics['rss_mb'] > threshold_mb:
         logger.warning(

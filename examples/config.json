@@ -1,0 +1,31 @@
+{
+    "logging": {
+        "level": "INFO",
+        "json_format": true,
+        "log_file": "pipeline.log"
+    },
+    "alerts": {
+        "enabled": true,
+        "time_threshold": 5,
+        "memory_threshold": 100,
+        "slack_webhook": null,
+        "email": {
+            "smtp_host": null,
+            "smtp_port": 587,
+            "sender": null,
+            "password": null,
+            "recipients": []
+        }
+    },
+    "prometheus": {
+        "enabled": true,
+        "port": 9090,
+        "host": "localhost"
+    },
+    "dashboard": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "debug": false,
+        "update_interval": 1.0
+    }
+} 

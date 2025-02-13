@@ -22,7 +22,15 @@ class Configuration:
         self.config.setdefault('alerts', {
             'enabled': True,
             'time_threshold': 300,  # 5 minutes
-            'memory_threshold': 1000  # 1GB
+            'memory_threshold': 1000,  # 1GB
+            'slack_webhook': None,  # Optional Slack webhook URL
+            'email': {  # Optional email configuration
+                'smtp_host': None,
+                'smtp_port': 587,
+                'sender': None,
+                'password': None,
+                'recipients': []
+            }
         })
 
     @classmethod

@@ -53,8 +53,10 @@ def stop_pipeline_timing(pipeline_name: str) -> None:
 
 def record_pipeline_run(pipeline_name: str, success: bool) -> None:
     """Record a pipeline execution."""
-    status = 'success' if success else 'failure'
-    PIPELINE_RUNS.labels(pipeline_name=pipeline_name, status=status).inc()
+    PIPELINE_RUNS.labels(
+        pipeline_name=pipeline_name, 
+        status='success' if success else 'failure'
+    ).inc()
 
 def update_memory_usage(pipeline_name: str, memory_bytes: float) -> None:
     """Update memory usage metrics."""

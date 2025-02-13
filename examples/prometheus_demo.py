@@ -1,61 +1,66 @@
-from pipeline_monitor import track_performance, ResourceMonitor, setup_logging
-from pipeline_monitor.dashboard import start_dashboard
-from pipeline_monitor.alerts import setup_alerts, log_alert_handler
+from pipeline_monitor import track_performance, ResourceMonitor, Configuration, setup_logging
+from prometheus_client import start_http_server, Counter, Gauge
 import time
-import threading
+import random
 import logging
 
-# Setup logging
-setup_logging(log_file='pipeline.log', json_format=True)
-
+# Load configuration
+config = Configuration.from_file("config.json")
+setup_logging(**config.get('logging', {}))
 logger = logging.getLogger(__name__)
 
-# Setup alerts
-alert_hook = setup_alerts(log_alert_handler)
+# Custom Prometheus metrics
+ITEMS_PROCESSED = Counter('pipeline_items_processed_total', 'Number of items processed')
+BATCH_SIZE = Gauge('pipeline_batch_size_current', 'Current batch size')
+PROCESSING_TIME = Gauge('pipeline_processing_time_seconds', 'Processing time per batch')
 
-# Example function with performance tracking
-@track_performance(alert_threshold=5.0)
-def process_data(size: int) -> list:
-    """Example pipeline that processes data and generates metrics."""
-    result = []
-    for i in range(size):
-        time.sleep(0.01)  # Simulate processing
-        result.append(i * i)
+def start_prometheus():
+    """Start Prometheus metrics server."""
+    prometheus_config = config.get('prometheus', {})
+    port = prometheus_config.get('port', 9090)
+    start_http_server(port)
+    logger.info(f"Prometheus metrics available at http://localhost:{port}")
+
+@track_performance(memory_threshold=50)
+def process_batch(size: int):
+    """Process a batch of data with variable timing."""
+    start = time.time()
+    BATCH_SIZE.set(size)
+    
+    # Simulate variable processing time
+    time.sleep(random.uniform(0.1, 0.5))
+    result = [i * i for i in range(size)]
+    
+    # Update metrics
+    ITEMS_PROCESSED.inc(size)
+    PROCESSING_TIME.set(time.time() - start)
+    
     return result
 
-def run_demo():
-    """Run continuous demo processing."""
-    while True:
-        # Process some data with resource monitoring
-        with ResourceMonitor("data_processing", alert_threshold_mb=100):
+def run_pipeline():
+    """Run a demo pipeline with multiple monitored components."""
+    batch_sizes = [100, 200, 300, 400, 500]
+    
+    for size in batch_sizes:
+        with ResourceMonitor(f"batch_processing_{size}"):
             try:
-                data = process_data(100)
-                time.sleep(1)
-
-                # Trigger an alert
-                alert_hook.alert(
-                    "Processing complete",
-                    context={'data_size': len(data)}
-                )
+                result = process_batch(size)
+                logger.info(f"Processed batch of {size}: got {len(result)} results")
+                time.sleep(0.5)  # Pause between batches
             except Exception as e:
-                logger.error(f"Error in demo processing: {str(e)}")
+                logger.error(f"Error processing batch {size}: {e}")
 
-if __name__ == '__main__':
+def main():
+    start_prometheus()
+    logger.info("Starting demo pipeline...")
+    
     try:
-        # Start the dashboard in a separate thread
-        dashboard_thread = threading.Thread(
-            target=start_dashboard,
-            kwargs={'port': 5001, 'debug': False},  # Use a different port
-            daemon=True
-        )
-        dashboard_thread.start()
-        logger.info("Dashboard thread started")
-
-        print("Dashboard started on http://0.0.0.0:5001")
-        print("Prometheus metrics available at http://0.0.0.0:5001/metrics")
-
-        # Run the demo process
-        run_demo()
+        while True:
+            run_pipeline()
+    except KeyboardInterrupt:
+        logger.info("Stopping demo...")
     except Exception as e:
-        logger.error(f"Error in main thread: {str(e)}")
-        raise
+        logger.error(f"Pipeline error: {e}")
+
+if __name__ == "__main__":
+    main()

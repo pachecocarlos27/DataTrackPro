@@ -1,0 +1,29 @@
+{
+    "logging": {
+        "level": "INFO",
+        "json_format": true,
+        "log_file": null
+    },
+    "alerts": {
+        "enabled": true,
+        "time_threshold": 300,
+        "memory_threshold": 1000,
+        "slack_webhook": null,
+        "email": {
+            "smtp_host": null,
+            "smtp_port": 587,
+            "sender": null,
+            "password": null,
+            "recipients": []
+        }
+    },
+    "prometheus": {
+        "enabled": true,
+        "port": 9090
+    },
+    "dashboard": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "debug": false
+    }
+} 

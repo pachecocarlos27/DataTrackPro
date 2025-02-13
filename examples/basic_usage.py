@@ -1,37 +1,30 @@
-from pipeline_monitor import track_performance, ResourceMonitor, setup_logging
-from pipeline_monitor.alerts import setup_alerts, log_alert_handler
-import time
+from pipeline_monitor import track_performance, ResourceMonitor
+from pipeline_monitor.config import Configuration
 
-# Setup logging
-setup_logging(log_file='pipeline.log', json_format=True)
+# Load configuration
+config = Configuration.from_file("config.json")
 
-# Setup alerts
-alert_hook = setup_alerts(log_alert_handler)
+# Using the decorator
+@track_performance(
+    alert_threshold=30,  # 30 seconds
+    memory_threshold=500  # 500MB
+)
+def process_data():
+    # Your processing code here
+    pass
 
-# Example function with performance tracking
-@track_performance(alert_threshold=5.0)
-def process_data(size: int) -> list:
-    result = []
-    for i in range(size):
-        time.sleep(0.01)  # Simulate processing
-        result.append(i * i)
-    return result
+# Using the context manager
+with ResourceMonitor("data_processing", alert_threshold_mb=1000):
+    # Your processing code here
+    pass
 
-# Example using context manager
-def main():
-    # Track a block of code
-    with ResourceMonitor("data_processing", alert_threshold_mb=100):
-        # Process some data
-        data = process_data(100)
-        
-        # Simulate more work
-        time.sleep(1)
-        
-        # Trigger an alert
-        alert_hook.alert(
-            "Processing complete",
-            context={'data_size': len(data)}
-        )
+# Using configuration file
+@track_performance(config_path="config.json")
+def pipeline_step():
+    # Will use thresholds from config file
+    pass
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    # Example pipeline
+    process_data()
+    pipeline_step()

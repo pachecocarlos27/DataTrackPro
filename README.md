@@ -1,39 +1,72 @@
+# Pipeline Monitor
+
+A comprehensive monitoring solution for Python data pipelines.
+
+## Features
+
+- Performance tracking with decorators and context managers
+- Memory usage monitoring
+- Automatic alerting (Slack, Email, Logs)
+- Real-time dashboard
+- Prometheus metrics integration
+- JSON logging
+
+## Installation
+
+```bash
 pip install pipeline-monitor
 ```
 
 ## Quick Start
 
 ```python
-from pipeline_monitor import monitor, MonitoringBlock
+from pipeline_monitor import track_performance, ResourceMonitor
 
-# Decorate functions for automatic monitoring
-@monitor
+# Monitor function performance
+@track_performance(alert_threshold=30, memory_threshold=500)
 def process_data():
-    # Your data processing code here
     pass
 
-# Use context manager for block monitoring
-with MonitoringBlock("data_processing"):
-    process_data()
+# Monitor code blocks
+with ResourceMonitor("data_processing", alert_threshold_mb=1000):
+    pass
 ```
 
-## Running the Tools
+## Configuration
 
-After installation, you can use the following commands:
+Create a `config.json` file:
 
-1. Start the monitoring dashboard:
+```json
+{
+    "alerts": {
+        "time_threshold": 300,
+        "memory_threshold": 1000,
+        "slack_webhook": "https://hooks.slack.com/...",
+        "email": {
+            "smtp_host": "smtp.gmail.com",
+            "smtp_port": 587,
+            "sender": "alerts@company.com",
+            "password": "secret",
+            "recipients": ["team@company.com"]
+        }
+    }
+}
+```
+
+## Tools
+
 ```bash
+# Start monitoring dashboard
 pipeline-dashboard
-```
 
-2. Run the demo pipeline:
-```bash
+# Run demo pipeline
 pipeline-demo
-```
 
-3. Run with Prometheus metrics:
-```bash
+# Start Prometheus metrics
 pipeline-prometheus
+
+# Test alerts configuration
+pipeline-test-alerts config.json
 ```
 
 ## Tutorials and Examples
