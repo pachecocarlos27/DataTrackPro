@@ -6,7 +6,6 @@ import threading
 import time
 import random
 import logging
-import math
 
 # Load configuration
 config = Configuration.from_file("examples/config.json")

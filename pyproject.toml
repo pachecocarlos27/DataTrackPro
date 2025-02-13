@@ -29,7 +29,7 @@ dependencies = [
     "flask>=3.1.0",
     "flask-socketio>=5.5.1",
     "prometheus-client>=0.21.1",
-    "psutil>=6.1.1",
+    "psutil>=5.9.0",
     "requests>=2.31.0",
     "simple-websocket>=1.1.0",
 ]

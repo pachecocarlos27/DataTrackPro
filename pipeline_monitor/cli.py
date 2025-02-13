@@ -2,7 +2,6 @@
 """Command-line interface for Pipeline Monitor."""
 
 import sys
-import json
 from pipeline_monitor.dashboard import app, socketio
 from pipeline_monitor.alerts import setup_alerts, log_alert_handler, email_alert_handler, slack_alert_handler, sms_alert_handler
 from pipeline_monitor.config import Configuration
@@ -16,6 +15,7 @@ def load_config(config_path: str = None) -> Configuration:
 def run_dashboard():
     """Entry point for the dashboard command"""
     print("Starting Pipeline Monitor Dashboard...")
+    socketio.run(app, debug=True)
 
 def run_demo():
     """Entry point for the demo command"""
@@ -28,6 +28,11 @@ def run_prometheus():
 def test_alerts():
     """Entry point for testing alerts"""
     print("Testing Pipeline Monitor Alerts...")
+    test_message = "Test alert message"
+    log_alert_handler(test_message)
+    email_alert_handler(test_message)
+    slack_alert_handler(test_message)
+    sms_alert_handler(test_message)
 
 def main():
     """Main CLI entry point."""
@@ -37,6 +42,8 @@ def main():
 
     command = sys.argv[1]
     config_path = sys.argv[2] if len(sys.argv) > 2 else None
+    config = load_config(config_path)
+    setup_alerts(config)
 
     commands = {
         'pipeline-dashboard': run_dashboard,

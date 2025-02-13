@@ -1,6 +1,5 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response  # noqa
 from flask_socketio import SocketIO
-import json
 import logging
 from typing import Optional
 from prometheus_client import generate_latest

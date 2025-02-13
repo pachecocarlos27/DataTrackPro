@@ -2,7 +2,7 @@ import time
 import functools
 import logging
 import traceback
-from typing import Callable, Any, Optional, TypeVar, Union, Dict, NamedTuple
+from typing import Callable, Any, Optional, TypeVar, Dict, NamedTuple
 import psutil
 import json
 from .dashboard.app import emit_metric
@@ -13,7 +13,6 @@ from .prometheus_metrics import (
 )
 from .alerts import setup_alerts, log_alert_handler, slack_alert_handler, email_alert_handler, sms_alert_handler
 from .config import Configuration
-from .logging_utils import JSONFormatter
 
 logger = logging.getLogger(__name__)
 
