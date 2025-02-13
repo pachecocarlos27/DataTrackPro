@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 import json
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -40,23 +41,23 @@ class Configuration:
         })
 
     @classmethod
-    def from_file(cls, file_path: str) -> 'Configuration':
+    def from_file(cls, path: str) -> 'Configuration':
         """
         Load configuration from JSON file.
 
         Args:
-            file_path: Path to JSON configuration file
+            path: Path to JSON configuration file
 
         Returns:
             Configuration instance
         """
-        try:
-            with open(file_path, 'r') as f:
-                config_dict = json.load(f)
-            return cls(config_dict)
-        except Exception as e:
-            logger.error(f"Failed to load configuration from {file_path}: {str(e)}")
-            return cls()
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"Configuration file not found: {path}")
+            
+        with path.open() as f:
+            config = json.load(f)
+        return cls(config)
 
     def get(self, key: str, default: Any = None) -> Any:
         """
@@ -70,6 +71,18 @@ class Configuration:
             Configuration value
         """
         return self.config.get(key, default)
+
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get configuration value.
+
+        Args:
+            key: Configuration key
+
+        Returns:
+            Configuration value
+        """
+        return self.config[key]
 
     def set(self, key: str, value: Any) -> None:
         """

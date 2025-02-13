@@ -1,3 +1,5 @@
+"""Context managers for Pipeline Monitor."""
+
 import time
 import psutil
 import logging

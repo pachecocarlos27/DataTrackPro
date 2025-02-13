@@ -1,3 +1,5 @@
+"""Logging utilities for Pipeline Monitor."""
+
 import logging
 import json
 import sys
@@ -32,6 +34,14 @@ class JSONFormatter(logging.Formatter):
             log_data['exception'] = self.formatException(record.exc_info)
             
         return json.dumps(log_data)
+
+def setup_logging(level=logging.INFO):
+    """Set up logging configuration."""
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    return logging.getLogger('pipeline_monitor')
 
 def setup_logging(
     level: int = logging.INFO,

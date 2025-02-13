@@ -67,7 +67,7 @@ class AlertHook:
         except Exception as e:
             logger.error(f"Failed to send alert: {str(e)}")
 
-def setup_alerts(handler: Callable[[str, Dict[str, Any]], None]) -> AlertHook:
+def setup_alerts(handler: Callable[[str, Dict[str, Any]], None] = None) -> AlertHook:
     """
     Setup alert system with custom handler.
     
@@ -77,10 +77,12 @@ def setup_alerts(handler: Callable[[str, Dict[str, Any]], None]) -> AlertHook:
     Returns:
         Configured AlertHook instance
     """
+    if handler is None:
+        handler = log_alert_handler
     return AlertHook(handler)
 
 # Example alert handlers
-def log_alert_handler(message: str, context: Dict[str, Any]) -> None:
+def log_alert_handler(message: str, context: Dict[str, Any] = None) -> None:
     """
     Simple handler that logs alerts to the logging system.
     """

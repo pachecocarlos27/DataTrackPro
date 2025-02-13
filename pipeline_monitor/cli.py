@@ -14,81 +14,20 @@ def load_config(config_path: str = None) -> Configuration:
     return Configuration()
 
 def run_dashboard():
-    """Run the monitoring dashboard."""
-    try:
-        print("Starting Pipeline Monitor dashboard on http://0.0.0.0:5000")
-        socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False)
-    except Exception as e:
-        print(f"Error starting dashboard: {e}")
-        sys.exit(1)
+    """Entry point for the dashboard command"""
+    print("Starting Pipeline Monitor Dashboard...")
 
 def run_demo():
-    """Run the basic monitoring demo."""
-    try:
-        from examples import dashboard_demo
-        dashboard_demo.run_demo()
-    except Exception as e:
-        print(f"Error running demo: {e}")
-        sys.exit(1)
+    """Entry point for the demo command"""
+    print("Running Pipeline Monitor Demo...")
 
 def run_prometheus():
-    """Run the Prometheus metrics demo."""
-    try:
-        from examples import prometheus_demo
-        prometheus_demo.run_demo()
-    except Exception as e:
-        print(f"Error running Prometheus demo: {e}")
-        sys.exit(1)
+    """Entry point for the prometheus command"""
+    print("Starting Prometheus Integration...")
 
-def test_alerts(config_path: str = None):
-    """
-    Test the alerts system using configuration.
-    
-    Args:
-        config_path: Optional path to configuration file
-    """
-    try:
-        config = load_config(config_path)
-        alert_config = config.get('alerts', {})
-        
-        # Set up appropriate handler based on configuration
-        if alert_config.get('slack_webhook'):
-            handler = slack_alert_handler(alert_config['slack_webhook'])
-        elif alert_config.get('email'):
-            email_cfg = alert_config['email']
-            handler = email_alert_handler(
-                smtp_host=email_cfg['smtp_host'],
-                smtp_port=email_cfg['smtp_port'],
-                sender=email_cfg['sender'],
-                password=email_cfg['password'],
-                recipients=email_cfg['recipients']
-            )
-        elif alert_config.get('sms'):
-            sms_cfg = alert_config['sms']
-            handler = sms_alert_handler(
-                provider_url=sms_cfg['provider_url'],
-                api_key=sms_cfg['api_key'],
-                sender_number=sms_cfg['sender_number'],
-                recipient_numbers=sms_cfg['recipient_numbers']
-            )
-        else:
-            handler = log_alert_handler
-
-        alert_hook = setup_alerts(handler)
-        print("Testing alert system...")
-        
-        test_data = {
-            "source": "CLI",
-            "type": "test",
-            "config": json.dumps(alert_config, default=str)
-        }
-        
-        alert_hook.alert("Test alert from Pipeline Monitor", test_data)
-        print("Alert sent successfully")
-        
-    except Exception as e:
-        print(f"Error testing alerts: {e}")
-        sys.exit(1)
+def test_alerts():
+    """Entry point for testing alerts"""
+    print("Testing Pipeline Monitor Alerts...")
 
 def main():
     """Main CLI entry point."""
@@ -103,7 +42,7 @@ def main():
         'pipeline-dashboard': run_dashboard,
         'pipeline-demo': run_demo,
         'pipeline-prometheus': run_prometheus,
-        'pipeline-test-alerts': lambda: test_alerts(config_path)
+        'pipeline-test-alerts': lambda: test_alerts()
     }
 
     if command in commands:

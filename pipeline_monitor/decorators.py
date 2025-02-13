@@ -183,3 +183,14 @@ def handle_error(func_name: str, error: Exception, alert_hook: Any) -> None:
         'traceback': traceback.format_exc(),
         'type': 'error'
     })
+
+def track_performance(func):
+    """Decorator to track function performance."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        duration = time.time() - start_time
+        print(f"Function {func.__name__} took {duration:.2f} seconds")
+        return result
+    return wrapper
