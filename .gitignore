@@ -1,8 +1,20 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -20,17 +32,18 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-venv/
-ENV/
-env/
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db 
+# Environments
+.env
+.venv
